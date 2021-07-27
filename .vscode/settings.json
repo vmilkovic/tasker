@@ -7,7 +7,7 @@
       "driver": "PostgreSQL",
       "username": "postgres",
       "database": "tasker",
-      "name": "docker-psogres",
+      "name": "docker-postgres",
       "password": "postgres"
     }
   ]
