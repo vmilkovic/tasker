@@ -33,3 +33,6 @@
 # Ignore all local history of files
 .history
 .ionide
+
+### DOCKER ###
+docker/postgres/backup/*
