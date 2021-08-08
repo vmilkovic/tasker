@@ -1,4 +1,5 @@
 {
+  "intelephense.environment.phpVersion": "8.0.8",
   "sqltools.connections": [
     {
       "previewLimit": 50,
