@@ -14,15 +14,19 @@ security:
 
     firewalls:
         dev:
-            pattern: ^/_(profiler|wdt)
-            security: false
+          pattern: ^/_(profiler|wdt)
+          security: false
+
+        api_token_refresh:
+          pattern: ^/tasker-api/token/refresh
+          stateless: true
+          refresh_jwt: ~
+
         tasker_api:
             pattern: ^/tasker-api
             stateless: true
             provider: app_user_provider
-            guard:
-                authenticators:
-                    - lexik_jwt_authentication.jwt_token_authenticator
+            jwt: ~
             json_login:
                 check_path: /tasker-api/authentication
                 username_path: email
@@ -33,4 +37,5 @@ security:
     access_control:
         - { path: ^/tasker-api/docs, roles: IS_AUTHENTICATED_ANONYMOUSLY } # Allows accessing the Swagger UI
         - { path: ^/tasker-api/authentication, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/tasker-api/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/tasker-api, roles: IS_AUTHENTICATED_FULLY }

@@ -1,3 +1,6 @@
 authentication:
     path: /tasker-api/authentication
     methods: ['POST']
+
+gesdinet_jwt_refresh_token:
+  path: /tasker-api/token/refresh
