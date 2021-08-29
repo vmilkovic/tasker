@@ -1,6 +1,6 @@
 security:
     enable_authenticator_manager: true
-    encoders:
+    password_hashers:
         App\Entity\User:
             algorithm: auto
 
@@ -27,15 +27,20 @@ security:
             stateless: true
             provider: app_user_provider
             jwt: ~
+            entry_point: app.jwt_token_authenticator
             json_login:
                 check_path: /tasker-api/authentication
                 username_path: email
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            guard:
+              authenticators:
+                  - app.jwt_token_authenticator
 
     access_control:
-        - { path: ^/tasker-api/docs, roles: IS_AUTHENTICATED_ANONYMOUSLY } # Allows accessing the Swagger UI
-        - { path: ^/tasker-api/authentication, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/tasker-api/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/tasker-api/docs, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [GET] } # Allows accessing the Swagger UI
+        - { path: ^/tasker-api/authentication, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
+        - { path: ^/tasker-api/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
+        - { path: ^/tasker-api/users, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
         - { path: ^/tasker-api, roles: IS_AUTHENTICATED_FULLY }
