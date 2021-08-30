@@ -21,9 +21,16 @@ services:
             - '../src/Kernel.php'
             - '../src/Tests/'
 
-    App\OpenApi\JWTDecorator:
+    App\OpenApi\JWTSetDecorator:
         decorates: 'api_platform.openapi.factory'
         autoconfigure: false
+
+    App\OpenApi\JWTRevalidateDecorator:
+      decorates: 'api_platform.openapi.factory'
+      autoconfigure: false
+
+    App\DataPersister\UserDataPersister:
+        decorates: 'api_platform.doctrine.orm.data_persister'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

@@ -8,7 +8,7 @@ use ApiPlatform\Core\OpenApi\Factory\OpenApiFactoryInterface;
 use ApiPlatform\Core\OpenApi\OpenApi;
 use ApiPlatform\Core\OpenApi\Model;
 
-final class JWTDecorator implements OpenApiFactoryInterface
+final class JWTRevalidateDecorator implements OpenApiFactoryInterface
 {
 
     public function __construct(private OpenApiFactoryInterface $decorated)
@@ -20,27 +20,23 @@ final class JWTDecorator implements OpenApiFactoryInterface
         $openApi = ($this->decorated)($context);
         $schemas = $openApi->getComponents()->getSchemas();
 
-        $schemas['Token'] = new \ArrayObject([
+        $schemas['Refresher'] = new \ArrayObject([
             'type' => 'object',
             'properties' => [
-                'token' => [
+                'refreshToken' => [
                     'type' => 'string',
                     'readOnly' => true,
                 ],
             ],
         ]);
 
-        $schemas['Credentials'] = new \ArrayObject([
+        $schemas['Refresher Credentials'] = new \ArrayObject([
             'type' => 'object',
             'properties' => [
-                'email' => [
+                'refreshToken' => [
                     'type' => 'string',
-                    'example' => 'johndoe@example.com',
-                ],
-                'password' => [
-                    'type' => 'string',
-                    'example' => 'apassword',
-                ],
+                    'example' => 'f6a611282c5fc980ddfc970fcf3029b6e773068df51797c3ef272b47d1593bdd40077aadab35052021a78f5810e3ba0a9b089da37f3c2b36074e4b7e23585b8b',
+                ]
             ],
         ]);
 
@@ -48,33 +44,33 @@ final class JWTDecorator implements OpenApiFactoryInterface
             ref: 'JWT Token',
             post: new Model\Operation(
                 operationId: 'postCredentialsItem',
-                tags: ['Authentication Token'],
+                tags: ['Reset Authentication Token'],
                 responses: [
                     '200' => [
-                        'description' => 'Get JWT token',
+                        'description' => 'Reset JWT token in httpOnly cookie and get new refresher token',
                         'content' => [
                             'application/json' => [
                                 'schema' => [
-                                    '$ref' => '#/components/schemas/Token',
+                                    '$ref' => '#/components/schemas/Refresher',
                                 ],
                             ],
                         ],
                     ],
                 ],
-                summary: 'Get JWT token to login.',
+                summary: 'Set new JWT token with refresher token.',
                 requestBody: new Model\RequestBody(
-                    description: 'Generate new JWT Token',
+                    description: 'Generate new JWT Token with refresher token',
                     content: new \ArrayObject([
                         'application/json' => [
                             'schema' => [
-                                '$ref' => '#/components/schemas/Credentials',
+                                '$ref' => '#/components/schemas/Refresher Credentials',
                             ],
                         ],
                     ]),
                 ),
             ),
         );
-        $openApi->getPaths()->addPath('/tasker-api/authentication', $pathItem);
+        $openApi->getPaths()->addPath('/tasker-api/token/refresh', $pathItem);
 
         return $openApi;
     }

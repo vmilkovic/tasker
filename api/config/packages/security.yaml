@@ -17,10 +17,10 @@ security:
           pattern: ^/_(profiler|wdt)
           security: false
 
-        api_token_refresh:
-          pattern: ^/tasker-api/token/refresh
-          stateless: true
-          refresh_jwt: ~
+        tasker_api_token_refresh:
+            pattern: ^/tasker-api/token/refresh
+            stateless: true
+            user_checker: security.user.provider.concrete.app_user_provider
 
         tasker_api:
             pattern: ^/tasker-api
@@ -39,8 +39,8 @@ security:
                   - app.jwt_token_authenticator
 
     access_control:
-        - { path: ^/tasker-api/docs, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [GET] } # Allows accessing the Swagger UI
-        - { path: ^/tasker-api/authentication, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
-        - { path: ^/tasker-api/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
-        - { path: ^/tasker-api/users, roles: IS_AUTHENTICATED_ANONYMOUSLY, methods: [POST] }
-        - { path: ^/tasker-api, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/tasker-api/docs, roles: [IS_AUTHENTICATED_ANONYMOUSLY ,PUBLIC_ACCESS], methods: [GET] } # Allows accessing the Swagger UI
+        - { path: ^/tasker-api/authentication, roles: [IS_AUTHENTICATED_ANONYMOUSLY ,PUBLIC_ACCESS], methods: [POST] }
+        - { path: ^/tasker-api/token/refresh, roles: [IS_AUTHENTICATED_ANONYMOUSLY ,PUBLIC_ACCESS] , methods: [POST] }
+        - { path: ^/tasker-api/users, roles: [IS_AUTHENTICATED_ANONYMOUSLY ,PUBLIC_ACCESS], methods: [POST] }
+        - { path: ^/tasker-api, roles: [IS_AUTHENTICATED_FULLY, ROLE_USER] }
