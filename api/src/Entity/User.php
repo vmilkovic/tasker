@@ -2,17 +2,19 @@
 
 namespace App\Entity;
 
+use App\Entity\Workspace;
 use Symfony\Component\Uid\Uuid;
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
+use App\Repository\UserRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
- * @ORM\Table(name="`user`")
+ * @ORM\Table(name="user")
  */
 #[ApiResource()]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -63,6 +65,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $roles = [];
 
     /**
+     * @var Workspace[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity="Workspace", mappedBy="owner",  cascade={"persist"})
+     */
+    private iterable $workspaces;
+
+    /**
      * @ORM\Column(type="datetime_immutable")
      */
     private $lastLogin;
@@ -85,6 +93,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->uuid = Uuid::v4();
+        $this->workspaces = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -207,6 +216,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->roles = $roles;
 
         return $this;
+    }
+
+    public function getWorkspaces()
+    {
+        return $this->workspaces;
+    }
+
+    public function addWorkspace(Workspace $workspace)
+    {
+        $workspace->setOwner($this);
+        $this->workspaces->add($workspace);
+    }
+
+    public function removeWorkspace(Workspace $workspace)
+    {
+        if ($this->workspaces->contains($workspace)) {
+            $workspace->setOwner(null);
+            $this->workspaces->removeElement($workspace);
+        }
     }
 
     public function getLastLogin(): ?\DateTimeInterface

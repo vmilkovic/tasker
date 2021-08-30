@@ -3,17 +3,17 @@
 namespace App\DataPersister;
 
 use App\Entity\User;
-use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
+use ApiPlatform\Core\DataPersister\DataPersisterInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class UserDataPersister implements ContextAwareDataPersisterInterface
+final class UserDataPersister implements DataPersisterInterface
 {
     #TODO setup Mailer https://api-platform.com/docs/core/data-persisters/
 
     private $decorated;
     private $passwordHasher;
 
-    public function __construct(ContextAwareDataPersisterInterface $decorated, UserPasswordHasherInterface $passwordHasher)
+    public function __construct(DataPersisterInterface $decorated, UserPasswordHasherInterface $passwordHasher)
     {
         $this->decorated = $decorated;
         $this->passwordHasher = $passwordHasher;

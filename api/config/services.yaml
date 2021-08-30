@@ -23,11 +23,13 @@ services:
 
     App\OpenApi\JWTSetDecorator:
         decorates: 'api_platform.openapi.factory'
-        autoconfigure: false
+        arguments: ['@App\OpenApi\JWTSetDecorator.inner']
+        autoconfigure: true
 
     App\OpenApi\JWTRevalidateDecorator:
-      decorates: 'api_platform.openapi.factory'
-      autoconfigure: false
+        decorates: 'api_platform.openapi.factory'
+        arguments: ['@App\OpenApi\JWTRevalidateDecorator.inner']
+        autoconfigure: true
 
     App\DataPersister\UserDataPersister:
         decorates: 'api_platform.doctrine.orm.data_persister'
