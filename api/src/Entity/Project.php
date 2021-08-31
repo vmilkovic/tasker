@@ -58,14 +58,8 @@ class Project
     private $workspace;
 
     /**
-     * Many Projects have many Users
      * @var User[]|ArrayCollection
-     * @ManyToMany(targetEntity=User::class)
-     * @JoinTable(
-     *      name="project_users",
-     *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="project_id", referencedColumnName="id")}
-     * )
+     * @ORM\ManyToMany(targetEntity=User::class, inversedBy="projects")
      */
     private iterable $users;
 
@@ -73,7 +67,7 @@ class Project
      * @var Workflow[]|ArrayCollection
      * @ORM\OneToMany(targetEntity=Workflow::class, mappedBy="project")
      */
-    private $workflows;
+    private iterable $workflows;
 
     /**
      * @ORM\Column(type="datetime_immutable")
@@ -175,8 +169,8 @@ class Project
 
     public function addUser(User $user): self
     {
-        if (!$this->workflows->contains($user)) {
-            $this->users->add($user);
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
         }
 
         return $this;
@@ -184,9 +178,7 @@ class Project
 
     public function removeUser(User $user): self
     {
-        if ($this->users->contains($user)) {
-            $this->users->removeElement($user);
-        }
+        $this->users->removeElement($user);
 
         return $this;
     }

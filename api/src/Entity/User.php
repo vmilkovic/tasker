@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Workspace;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Uid\Uuid;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
@@ -71,6 +72,42 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private iterable $workspaces;
 
     /**
+     * @var Project[]|ArrayCollection
+     * @ORM\ManyToMany(targetEntity=Project::class, mappedBy="users")
+     */
+    private iterable $projects;
+
+    /**
+     * @var Task[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity=Task::class, mappedBy="createdBy")
+     */
+    private iterable $createdTasks;
+
+    /**
+     * @var Task[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity=Task::class, mappedBy="assignedTo")
+     */
+    private iterable $assignedTasks;
+
+    /**
+     * @var Issue[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity=Issue::class, mappedBy="createdBy")
+     */
+    private iterable $createdIssues;
+
+    /**
+     * @var Issue[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity=Issue::class, mappedBy="assignedTo")
+     */
+    private iterable $assignedIssues;
+
+    /**
+     * @var Comment[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="commenter")
+     */
+    private iterable $comments;
+
+    /**
      * @ORM\Column(type="datetime_immutable")
      */
     private $lastLogin;
@@ -94,6 +131,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->uuid = Uuid::v4();
         $this->workspaces = new ArrayCollection();
+        $this->projects = new ArrayCollection();
+        $this->createdTasks = new ArrayCollection();
+        $this->assignedTasks = new ArrayCollection();
+        $this->createdIssues = new ArrayCollection();
+        $this->assignedIssues = new ArrayCollection();
+        $this->comments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -242,6 +285,183 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
             if ($workspace->getOwner() === $this) {
                 $workspace->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Project[]
+     */
+    public function getProjects(): Collection
+    {
+        return $this->projects;
+    }
+
+    public function addProject(Project $project): self
+    {
+        if (!$this->projects->contains($project)) {
+            $this->projects[] = $project;
+            $project->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProject(Project $project): self
+    {
+        if ($this->projects->removeElement($project)) {
+            $project->removeUser($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Task[]
+     */
+    public function getCreatedTasks(): Collection
+    {
+        return $this->createdTasks;
+    }
+
+    public function addCreatedTask(Task $createdTask): self
+    {
+        if (!$this->createdTasks->contains($createdTask)) {
+            $this->createdTasks[] = $createdTask;
+            $createdTask->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCreatedTask(Task $createdTask): self
+    {
+        if ($this->createdTasks->removeElement($createdTask)) {
+            // set the owning side to null (unless already changed)
+            if ($createdTask->getCreatedBy() === $this) {
+                $createdTask->setCreatedBy(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Task[]
+     */
+    public function getAssignedTasks(): Collection
+    {
+        return $this->assignedTasks;
+    }
+
+    public function addAssignedTask(Task $task): self
+    {
+        if (!$this->assignedTasks->contains($task)) {
+            $this->assignedTasks[] = $task;
+            $task->setAssignedTo($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAssignedTask(Task $task): self
+    {
+        if ($this->assignedTasks->removeElement($task)) {
+            // set the owning side to null (unless already changed)
+            if ($task->getAssignedTo() === $this) {
+                $task->setAssignedTo(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Issue[]
+     */
+    public function getCreatedIssues(): Collection
+    {
+        return $this->createdIssues;
+    }
+
+    public function addCreatedIssue(Issue $createdIssue): self
+    {
+        if (!$this->createdIssues->contains($createdIssue)) {
+            $this->createdIssues[] = $createdIssue;
+            $createdIssue->setCreatedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCreatedIssue(Issue $createdIssue): self
+    {
+        if ($this->createdIssues->removeElement($createdIssue)) {
+            // set the owning side to null (unless already changed)
+            if ($createdIssue->getCreatedBy() === $this) {
+                $createdIssue->setCreatedBy(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Issue[]
+     */
+    public function getAssignedIssues(): Collection
+    {
+        return $this->assignedIssues;
+    }
+
+    public function addAssignedIssue(Issue $issue): self
+    {
+        if (!$this->assignedIssues->contains($issue)) {
+            $this->assignedIssues[] = $issue;
+            $issue->setAssignedTo($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAssignedIssue(Issue $issue): self
+    {
+        if ($this->assignedIssues->removeElement($issue)) {
+            // set the owning side to null (unless already changed)
+            if ($issue->getAssignedTo() === $this) {
+                $issue->setAssignedTo(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Comment[]
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments[] = $comment;
+            $comment->setCommenter($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): self
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getCommenter() === $this) {
+                $comment->setCommenter(null);
             }
         }
 

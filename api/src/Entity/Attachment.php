@@ -2,18 +2,16 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\WorkflowRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
+use Doctrine\ORM\Mapping as ORM;
+use App\Repository\AttachmentRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
 
 /**
- * @ORM\Entity(repositoryClass=WorkflowRepository::class)
+ * @ORM\Entity(repositoryClass=AttachmentRepository::class)
  */
 #[ApiResource]
-class Workflow
+class Attachment
 {
     /**
      * @ORM\Id
@@ -33,26 +31,27 @@ class Workflow
     private $name;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $description;
+    private $path;
 
     /**
-     * @ORM\Column(type="smallint")
+     * @var Task
+     * @ORM\ManyToOne(targetEntity=Task::class, inversedBy="attachments")
      */
-    private $position;
+    private $task;
 
     /**
-     * @var Project
-     * @ORM\ManyToOne(targetEntity=Project::class, inversedBy="workflows")
+     * @var Issue
+     * @ORM\ManyToOne(targetEntity=Issue::class, inversedBy="attachments")
      */
-    private $project;
+    private $issue;
 
     /**
-     * @var Task[]|ArrayCollection
-     * @ORM\OneToMany(targetEntity=Task::class, mappedBy="workflow")
+     * @var Comment
+     * @ORM\ManyToOne(targetEntity=Comment::class, inversedBy="attachments")
      */
-    private iterable $tasks;
+    private $comment;
 
     /**
      * @ORM\Column(type="datetime_immutable")
@@ -72,7 +71,6 @@ class Workflow
     public function __construct()
     {
         $this->uuid = Uuid::v4();
-        $this->tasks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -97,68 +95,50 @@ class Workflow
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getPath(): ?string
     {
-        return $this->description;
+        return $this->path;
     }
 
-    public function setDescription(?string $description): self
+    public function setPath(?string $path): self
     {
-        $this->description = $description;
+        $this->path = $path;
 
         return $this;
     }
 
-    public function getPosition(): ?int
+    public function getTask(): ?Task
     {
-        return $this->position;
+        return $this->task;
     }
 
-    public function setPosition(int $position): self
+    public function setTask(?Task $task): self
     {
-        $this->position = $position;
+        $this->task = $task;
 
         return $this;
     }
 
-    public function getProjectId(): ?Project
+    public function getIssue(): ?Issue
     {
-        return $this->project;
+        return $this->issue;
     }
 
-    public function setProjectId(?Project $project): self
+    public function setIssue(?Issue $issue): self
     {
-        $this->project = $project;
+        $this->issue = $issue;
 
         return $this;
     }
 
-    /**
-     * @return Collection|Task[]
-     */
-    public function getTasks(): Collection
+    public function getComment(): ?Comment
     {
-        return $this->tasks;
+        return $this->comment;
     }
 
-    public function addTask(Task $task): self
+    public function setComment(?Comment $comment): self
     {
-        if (!$this->tasks->contains($task)) {
-            $this->tasks[] = $task;
-            $task->setWorkflow($this);
-        }
-
-        return $this;
-    }
-
-    public function removeTask(Task $task): self
-    {
-        if ($this->tasks->removeElement($task)) {
-            // set the owning side to null (unless already changed)
-            if ($task->getWorkflow() === $this) {
-                $task->setWorkflow(null);
-            }
-        }
+        $this->comment = $comment;
 
         return $this;
     }

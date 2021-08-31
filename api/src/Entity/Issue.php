@@ -2,21 +2,18 @@
 
 namespace App\Entity;
 
-use App\Entity\User;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Uid\Uuid;
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\TaskRepository;
-use Doctrine\ORM\Mapping\OneToOne;
-use Doctrine\ORM\Mapping\JoinColumn;
+use App\Repository\IssueRepository;
+use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * @ORM\Entity(repositoryClass=TaskRepository::class)
+ * @ORM\Entity(repositoryClass=IssueRepository::class)
  */
 #[ApiResource]
-class Task
+class Issue
 {
     /**
      * @ORM\Id
@@ -41,6 +38,11 @@ class Task
     private $description;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isResolved;
+
+    /**
      * @ORM\Column(type="datetime_immutable", nullable=true)
      */
     private $estimateFrom;
@@ -51,50 +53,43 @@ class Task
     private $estimateTo;
 
     /**
-     * @ORM\Column(type="smallint")
-     */
-    private $position;
-
-    /**
      * @var Timer
-     * @ORM\OneToOne(targetEntity=Timer::class, inversedBy="task", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity=Timer::class, inversedBy="issue", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $timer;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Workflow", inversedBy="tasks")
-     */
-    private $workflow;
-
-    /**
-     * @var User|null
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="assignedTasks")
-     */
-    private $assignedTo;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="createdTasks")
+     * @var User
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="createdIssues")
      * @ORM\JoinColumn(nullable=false)
      */
     private $createdBy;
 
     /**
-     * @var Issues[]|ArrayCollection
-     * @ORM\OneToMany(targetEntity=Issue::class, mappedBy="task")
+     * @var User
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="assignedIssues")
      */
-    private $issues;
+    private $assignedTo;
+
+    /**
+     * @var Task
+     * @ORM\ManyToOne(targetEntity=Task::class, inversedBy="issues")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $task;
 
     /**
      * @var Comment[]|ArrayCollection
-     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="task")
+     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="issue")
      */
     private iterable $comments;
 
     /**
-     * @ORM\OneToMany(targetEntity=Attachment::class, mappedBy="task")
+     * @var Attachment[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity=Attachment::class, mappedBy="issue")
      */
-    private $attachments;
+    private iterable $attachments;
 
     /**
      * @ORM\Column(type="datetime_immutable")
@@ -114,7 +109,6 @@ class Task
     public function __construct()
     {
         $this->uuid = Uuid::v4();
-        $this->issues = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->attachments = new ArrayCollection();
     }
@@ -153,6 +147,18 @@ class Task
         return $this;
     }
 
+    public function getIsResolved(): ?bool
+    {
+        return $this->isResolved;
+    }
+
+    public function setIsResolved(bool $isResolved): self
+    {
+        $this->isResolved = $isResolved;
+
+        return $this;
+    }
+
     public function getEstimateFrom(): ?\DateTimeImmutable
     {
         return $this->estimateFrom;
@@ -177,18 +183,6 @@ class Task
         return $this;
     }
 
-    public function getPosition(): ?int
-    {
-        return $this->position;
-    }
-
-    public function setPosition(?int $position): self
-    {
-        $this->position = $position;
-
-        return $this;
-    }
-
     public function getTimer(): ?Timer
     {
         return $this->timer;
@@ -197,18 +191,6 @@ class Task
     public function setTimer(Timer $timer): self
     {
         $this->timer = $timer;
-
-        return $this;
-    }
-
-    public function getWorkflow(): ?Workflow
-    {
-        return $this->workflow;
-    }
-
-    public function setWorkflow(?Workflow $workflow): self
-    {
-        $this->workflow = $workflow;
 
         return $this;
     }
@@ -237,32 +219,14 @@ class Task
         return $this;
     }
 
-    /**
-     * @return Collection|Issue[]
-     */
-    public function getIssues(): Collection
+    public function getTask(): ?Task
     {
-        return $this->issues;
+        return $this->task;
     }
 
-    public function addIssue(Issue $issue): self
+    public function setTask(?Task $task): self
     {
-        if (!$this->issues->contains($issue)) {
-            $this->issues[] = $issue;
-            $issue->setTask($this);
-        }
-
-        return $this;
-    }
-
-    public function removeIssue(Issue $issue): self
-    {
-        if ($this->issues->removeElement($issue)) {
-            // set the owning side to null (unless already changed)
-            if ($issue->getTask() === $this) {
-                $issue->setTask(null);
-            }
-        }
+        $this->task = $task;
 
         return $this;
     }
@@ -279,7 +243,7 @@ class Task
     {
         if (!$this->comments->contains($comment)) {
             $this->comments[] = $comment;
-            $comment->setTask($this);
+            $comment->setIssue($this);
         }
 
         return $this;
@@ -289,8 +253,8 @@ class Task
     {
         if ($this->comments->removeElement($comment)) {
             // set the owning side to null (unless already changed)
-            if ($comment->getTask() === $this) {
-                $comment->setTask(null);
+            if ($comment->getIssue() === $this) {
+                $comment->setIssue(null);
             }
         }
 
@@ -309,7 +273,7 @@ class Task
     {
         if (!$this->attachments->contains($attachment)) {
             $this->attachments[] = $attachment;
-            $attachment->setTask($this);
+            $attachment->setIssue($this);
         }
 
         return $this;
@@ -319,8 +283,8 @@ class Task
     {
         if ($this->attachments->removeElement($attachment)) {
             // set the owning side to null (unless already changed)
-            if ($attachment->getTask() === $this) {
-                $attachment->setTask(null);
+            if ($attachment->getIssue() === $this) {
+                $attachment->setIssue(null);
             }
         }
 
