@@ -2,19 +2,18 @@
 
 namespace App\Entity;
 
-use App\Entity\User;
-use App\Entity\Project;
-use Symfony\Component\Uid\Uuid;
-use Doctrine\ORM\Mapping as ORM;
-use App\Repository\WorkspaceRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Repository\WorkflowRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Uid\Uuid;
 
 /**
- * @ORM\Entity(repositoryClass=WorkspaceRepository::class)
+ * @ORM\Entity(repositoryClass=WorkflowRepository::class)
  */
 #[ApiResource]
-class Workspace
+class Workflow
 {
     /**
      * @ORM\Id
@@ -34,21 +33,26 @@ class Workspace
     private $name;
 
     /**
-     * @var User
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="workspaces")
-     */
-    private $owner;
-
-    /**
-     * @var Project[]|ArrayCollection
-     * @ORM\OneToMany(targetEntity=Project::class, mappedBy="workspace", cascade={"persist"})
-     */
-    private iterable $projects;
-
-    /**
      * @ORM\Column(type="text", nullable=true)
      */
     private $description;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $position;
+
+    /**
+     * @var Project
+     * @ORM\ManyToOne(targetEntity=Project::class, inversedBy="workflows")
+     */
+    private $project;
+
+    /**
+     * @var Task[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity=Task::class, mappedBy="workflow")
+     */
+    private iterable $tasks;
 
     /**
      * @ORM\Column(type="datetime_immutable")
@@ -68,7 +72,7 @@ class Workspace
     public function __construct()
     {
         $this->uuid = Uuid::v4();
-        $this->projects = new ArrayCollection();
+        $this->tasks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -105,35 +109,58 @@ class Workspace
         return $this;
     }
 
-    public function getOwner(): User
+    public function getPosition(): ?int
     {
-        return $this->owner;
+        return $this->position;
     }
 
-    public function setOwner(?User $owner): self
+    public function setPosition(int $position): self
     {
-        $this->owner = $owner;
+        $this->position = $position;
 
         return $this;
     }
 
-    public function getProjects(): ArrayCollection
+    public function getProjectId(): ?Project
     {
-        return $this->projects;
+        return $this->projectId;
     }
 
-    public function addProject(Project $project): void
+    public function setProjectId(?Project $projectId): self
     {
-        $project->setWorkspace($this);
-        $this->projects->add($project);
+        $this->projectId = $projectId;
+
+        return $this;
     }
 
-    public function removeProject(Project $project): void
+    /**
+     * @return Collection|Task[]
+     */
+    public function getTasks(): Collection
     {
-        if ($this->projects->contains($project)) {
-            $project->setWorkspace(null);
-            $this->projects->removeElement($project);
+        return $this->tasks;
+    }
+
+    public function addTask(Task $task): self
+    {
+        if (!$this->tasks->contains($task)) {
+            $this->tasks[] = $task;
+            $task->setWorkflow($this);
         }
+
+        return $this;
+    }
+
+    public function removeTask(Task $task): self
+    {
+        if ($this->tasks->removeElement($task)) {
+            // set the owning side to null (unless already changed)
+            if ($task->getWorkflow() === $this) {
+                $task->setWorkflow(null);
+            }
+        }
+
+        return $this;
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable

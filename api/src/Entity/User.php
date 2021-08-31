@@ -218,23 +218,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * @return Collection|Workspace[]
+     */
     public function getWorkspaces()
     {
         return $this->workspaces;
     }
 
-    public function addWorkspace(Workspace $workspace)
+    public function addWorkspace(Workspace $workspace): self
     {
-        $workspace->setOwner($this);
-        $this->workspaces->add($workspace);
+        if (!$this->workspace->contains($workspace)) {
+            $workspace->setOwner($this);
+            $this->workspaces->add($workspace);
+        }
+
+        return $this;
     }
 
-    public function removeWorkspace(Workspace $workspace)
+    public function removeWorkspace(Workspace $workspace): self
     {
-        if ($this->workspaces->contains($workspace)) {
-            $workspace->setOwner(null);
-            $this->workspaces->removeElement($workspace);
+        if ($this->workspaces->removeElement($workspace)) {
+
+            if ($workspace->getOwner() === $this) {
+                $workspace->setOwner(null);
+            }
         }
+
+        return $this;
     }
 
     public function getLastLogin(): ?\DateTimeInterface

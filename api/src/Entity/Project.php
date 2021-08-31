@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Uid\Uuid;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinTable;
@@ -51,14 +52,15 @@ class Project
 
     /**
      * @var Workspace
-     * @ORM\ManyToOne(targetEntity="Workspace", inversedBy="projects")
+     * @ORM\ManyToOne(targetEntity=Workspace::class, inversedBy="projects")
      * @JoinColumn(name="workspace_id", referencedColumnName="id")
      */
     private $workspace;
 
     /**
+     * Many Projects have many Users
      * @var User[]|ArrayCollection
-     * @ManyToMany(targetEntity="User")
+     * @ManyToMany(targetEntity=User::class)
      * @JoinTable(
      *      name="project_users",
      *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
@@ -66,6 +68,12 @@ class Project
      * )
      */
     private iterable $users;
+
+    /**
+     * @var Workflow[]|ArrayCollection
+     * @ORM\OneToMany(targetEntity=Workflow::class, mappedBy="project")
+     */
+    private $workflows;
 
     /**
      * @ORM\Column(type="datetime_immutable")
@@ -86,6 +94,7 @@ class Project
     {
         $this->uuid = Uuid::v4();
         $this->users = new ArrayCollection();
+        $this->workflows = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -156,20 +165,57 @@ class Project
         $this->workspace = $workspace;
     }
 
-    public function getUsers()
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsers(): Collection
     {
         return $this->users;
     }
 
-    public function addUser(User $user)
+    public function addUser(User $user): self
     {
-        $this->users->add($user);
+        if (!$this->workflows->contains($user)) {
+            $this->users->add($user);
+        }
+
+        return $this;
     }
 
     public function removeUser(User $user): self
     {
         if ($this->users->contains($user)) {
             $this->users->removeElement($user);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Workflow[]
+     */
+    public function getWorkflows(): Collection
+    {
+        return $this->workflows;
+    }
+
+    public function addWorkflow(Workflow $workflow): self
+    {
+        if (!$this->workflows->contains($workflow)) {
+            $this->workflows[] = $workflow;
+            $workflow->setProjectId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWorkflow(Workflow $workflow): self
+    {
+        if ($this->workflows->removeElement($workflow)) {
+            // set the owning side to null (unless already changed)
+            if ($workflow->getProjectId() === $this) {
+                $workflow->setProjectId(null);
+            }
         }
 
         return $this;

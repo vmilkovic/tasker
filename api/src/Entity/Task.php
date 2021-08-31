@@ -3,18 +3,18 @@
 namespace App\Entity;
 
 use App\Entity\User;
-use App\Entity\Project;
 use Symfony\Component\Uid\Uuid;
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\WorkspaceRepository;
+use App\Repository\TaskRepository;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Mapping\JoinColumn;
 use ApiPlatform\Core\Annotation\ApiResource;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * @ORM\Entity(repositoryClass=WorkspaceRepository::class)
+ * @ORM\Entity(repositoryClass=TaskRepository::class)
  */
 #[ApiResource]
-class Workspace
+class Task
 {
     /**
      * @ORM\Id
@@ -34,21 +34,29 @@ class Workspace
     private $name;
 
     /**
-     * @var User
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="workspaces")
-     */
-    private $owner;
-
-    /**
-     * @var Project[]|ArrayCollection
-     * @ORM\OneToMany(targetEntity=Project::class, mappedBy="workspace", cascade={"persist"})
-     */
-    private iterable $projects;
-
-    /**
      * @ORM\Column(type="text", nullable=true)
      */
     private $description;
+
+    /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
+    private $timeFrom;
+
+    /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
+    private $timeTo;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Workflow", inversedBy="tasks")
+     */
+    private $workflow;
+
+    /**
+     * @ORM\OneToOne(targetEntity=User::class, cascade={"persist", "remove"})
+     */
+    private $assignedTo;
 
     /**
      * @ORM\Column(type="datetime_immutable")
@@ -68,8 +76,8 @@ class Workspace
     public function __construct()
     {
         $this->uuid = Uuid::v4();
-        $this->projects = new ArrayCollection();
     }
+
 
     public function getId(): ?int
     {
@@ -105,35 +113,52 @@ class Workspace
         return $this;
     }
 
-    public function getOwner(): User
+    public function getTimeFrom(): ?\DateTimeImmutable
     {
-        return $this->owner;
+        return $this->timeFrom;
     }
 
-    public function setOwner(?User $owner): self
+    public function setTimeFrom(?\DateTimeImmutable $timeFrom): self
     {
-        $this->owner = $owner;
+        $this->timeFrom = $timeFrom;
 
         return $this;
     }
 
-    public function getProjects(): ArrayCollection
+    public function getTimeTo(): ?\DateTimeImmutable
     {
-        return $this->projects;
+        return $this->timeTo;
     }
 
-    public function addProject(Project $project): void
+    public function setTimeTo(?\DateTimeImmutable $timeTo): self
     {
-        $project->setWorkspace($this);
-        $this->projects->add($project);
+        $this->timeTo = $timeTo;
+
+        return $this;
     }
 
-    public function removeProject(Project $project): void
+    public function getWorkflow(): ?Workflow
     {
-        if ($this->projects->contains($project)) {
-            $project->setWorkspace(null);
-            $this->projects->removeElement($project);
-        }
+        return $this->workflow;
+    }
+
+    public function setWorkflow(?Workflow $workflow): self
+    {
+        $this->workflow = $workflow;
+
+        return $this;
+    }
+
+    public function getAssignedTo(): ?User
+    {
+        return $this->assignedTo;
+    }
+
+    public function setAssignedTo(?User $assignedTo): self
+    {
+        $this->assignedTo = $assignedTo;
+
+        return $this;
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
