@@ -2,15 +2,18 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
-use App\Repository\WorkflowRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
+use Doctrine\ORM\Mapping as ORM;
+use App\Repository\WorkflowRepository;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiProperty;
+use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity(repositoryClass=WorkflowRepository::class)
+ * @ORM\Table(name="workflow")
  */
 #[ApiResource]
 class Workflow
@@ -19,11 +22,13 @@ class Workflow
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @ApiProperty(identifier=false)
      */
     private $id;
 
     /**
      * @ORM\Column(type="uuid")
+     * @ApiProperty(identifier=true)
      */
     private $uuid;
 
@@ -51,6 +56,7 @@ class Workflow
     /**
      * @var Task[]|ArrayCollection
      * @ORM\OneToMany(targetEntity=Task::class, mappedBy="workflow")
+     * @ApiSubresource(maxDepth=1)
      */
     private iterable $tasks;
 

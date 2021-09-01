@@ -3,17 +3,20 @@
 namespace App\Entity;
 
 use App\Entity\User;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Uid\Uuid;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\TaskRepository;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity(repositoryClass=TaskRepository::class)
+ * @ORM\Table(name="task")
  */
 #[ApiResource]
 class Task
@@ -22,11 +25,13 @@ class Task
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @ApiProperty(identifier=false)
      */
     private $id;
 
     /**
      * @ORM\Column(type="uuid")
+     * @ApiProperty(identifier=true)
      */
     private $uuid;
 
@@ -61,16 +66,18 @@ class Task
     private $position;
 
     /**
-     * @var Timer
-     * @ORM\OneToOne(targetEntity=Timer::class, inversedBy="task", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $timer;
-
-    /**
+     * @var Workflow
      * @ORM\ManyToOne(targetEntity="Workflow", inversedBy="tasks")
      */
     private $workflow;
+
+    /**
+     * @var Timer
+     * @ORM\OneToOne(targetEntity=Timer::class, inversedBy="task", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
+     * @ApiSubresource(maxDepth=1)
+     */
+    private $timer;
 
     /**
      * @var User|null
@@ -87,18 +94,21 @@ class Task
     /**
      * @var Issues[]|ArrayCollection
      * @ORM\OneToMany(targetEntity=Issue::class, mappedBy="task")
+     * @ApiSubresource(maxDepth=1)
      */
     private $issues;
 
     /**
      * @var Comment[]|ArrayCollection
      * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="task")
+     * @ApiSubresource(maxDepth=1)
      */
     private iterable $comments;
 
     /**
      * @var Attachment[]|ArrayCollection
      * @ORM\OneToMany(targetEntity=Attachment::class, mappedBy="task")
+     * @ApiSubresource(maxDepth=1)
      */
     private iterable $attachments;
 
@@ -208,18 +218,6 @@ class Task
         return $this;
     }
 
-    public function getTimer(): ?Timer
-    {
-        return $this->timer;
-    }
-
-    public function setTimer(Timer $timer): self
-    {
-        $this->timer = $timer;
-
-        return $this;
-    }
-
     public function getWorkflow(): ?Workflow
     {
         return $this->workflow;
@@ -228,6 +226,18 @@ class Task
     public function setWorkflow(?Workflow $workflow): self
     {
         $this->workflow = $workflow;
+
+        return $this;
+    }
+
+    public function getTimer(): ?Timer
+    {
+        return $this->timer;
+    }
+
+    public function setTimer(Timer $timer): self
+    {
+        $this->timer = $timer;
 
         return $this;
     }

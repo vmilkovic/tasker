@@ -5,10 +5,12 @@ namespace App\Entity;
 use Symfony\Component\Uid\Uuid;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\TimerRepository;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
 
 /**
  * @ORM\Entity(repositoryClass=TimerRepository::class)
+ * @ORM\Table(name="timer")
  */
 #[ApiResource]
 class Timer
@@ -17,11 +19,13 @@ class Timer
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @ApiProperty(identifier=false)
      */
     private $id;
 
     /**
      * @ORM\Column(type="uuid")
+     * @ApiProperty(identifier=true)
      */
     private $uuid;
 

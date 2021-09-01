@@ -2,13 +2,16 @@
 
 namespace App\Entity;
 
+use DateTimeImmutable;
 use App\Entity\Workspace;
-use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Uid\Uuid;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
+use Doctrine\ORM\Mapping\UniqueConstraint;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
-use DateTimeImmutable;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -18,9 +21,40 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
  * Tasker users
  *
  * @ORM\Entity(repositoryClass=UserRepository::class)
- * @ORM\Table(name="user")
+ * @ORM\Table(
+ *     name="user",
+ *     uniqueConstraints={
+ *         @UniqueConstraint(
+ *             name="user_unique",
+ *             columns={"email", "username"}
+ *         )
+ *     },
+ * )
+ * @ApiResource(
+ *     normalizationContext={"groups"={"read"}},
+ *     denormalizationContext={"groups"={"write"}},
+ *     collectionOperations={"GET", "POST"},
+ *     itemOperations={"GET", "PATCH"},
+ *     subresourceOperations={
+ *          "created_tasks_get_subresource"={
+ *              "method"="GET",
+ *              "path"="/tasker-api/users/{uuid}/created-tasks"
+ *          },
+ *          "assigned_tasks_get_subresource"={
+ *              "method"="GET",
+ *              "path"="/tasker-api/users/{uuid}/assigned-tasks"
+ *          },
+ *          "created_issues_get_subresource"={
+ *              "method"="GET",
+ *              "path"="/tasker-api/users/{uuid}/created-issues"
+ *          },
+ *          "assigned_issues_get_subresource"={
+ *              "method"="GET",
+ *              "path"="/tasker-api/users/{uuid}/assigned-issues"
+ *          }
+ *     },
+ * )
  */
-#[ApiResource()]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
@@ -28,12 +62,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * @Assert\Type("integer")
+     * @ApiProperty(identifier=false)
      */
     private $id;
 
     /**
      * @ORM\Column(type="uuid")
      * @Assert\Uuid
+     * @ApiProperty(identifier=true)
      */
     private $uuid;
 
@@ -104,6 +140,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     type="iterable",
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
+     * @ApiSubresource(maxDepth=1)
      */
     private iterable $workspaces;
 
@@ -114,6 +151,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     type="iterable",
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
+     * @ApiSubresource(maxDepth=1)
      */
     private iterable $projects;
 
@@ -124,6 +162,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     type="iterable",
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
+     * @ApiSubresource(maxDepth=1)
      */
     private iterable $createdTasks;
 
@@ -134,6 +173,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     type="iterable",
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
+     * @ApiSubresource(maxDepth=1)
      */
     private iterable $assignedTasks;
 
@@ -144,6 +184,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     type="iterable",
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
+     * @ApiSubresource(maxDepth=1)
      */
     private iterable $createdIssues;
 
@@ -154,6 +195,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     type="iterable",
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
+     * @ApiSubresource(maxDepth=1)
      */
     private iterable $assignedIssues;
 
@@ -175,6 +217,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     },
      *     allowMissingFields = true
      * )
+     * @ApiSubresource(maxDepth=1)
      */
     private iterable $comments;
 

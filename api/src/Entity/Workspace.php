@@ -7,11 +7,14 @@ use App\Entity\Project;
 use Symfony\Component\Uid\Uuid;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\WorkspaceRepository;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity(repositoryClass=WorkspaceRepository::class)
+ * @ORM\Table(name="workspace")
  */
 #[ApiResource]
 class Workspace
@@ -20,11 +23,13 @@ class Workspace
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @ApiProperty(identifier=false)
      */
     private $id;
 
     /**
      * @ORM\Column(type="uuid")
+     * @ApiProperty(identifier=true)
      */
     private $uuid;
 
@@ -42,6 +47,7 @@ class Workspace
     /**
      * @var Project[]|ArrayCollection
      * @ORM\OneToMany(targetEntity=Project::class, mappedBy="workspace", cascade={"persist"})
+     * @ApiSubresource(maxDepth=1)
      */
     private iterable $projects;
 

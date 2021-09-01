@@ -2,18 +2,21 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Uid\Uuid;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToMany;
 use App\Repository\ProjectRepository;
+use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity(repositoryClass=ProjectRepository::class)
+ * @ORM\Table(name="project")
  */
 #[ApiResource]
 class Project
@@ -22,11 +25,13 @@ class Project
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @ApiProperty(identifier=false)
      */
     private $id;
 
     /**
      * @ORM\Column(type="uuid")
+     * @ApiProperty(identifier=true)
      */
     private $uuid;
 
@@ -60,12 +65,14 @@ class Project
     /**
      * @var User[]|ArrayCollection
      * @ORM\ManyToMany(targetEntity=User::class, inversedBy="projects")
+     * @ApiSubresource(maxDepth=1)
      */
     private iterable $users;
 
     /**
      * @var Workflow[]|ArrayCollection
      * @ORM\OneToMany(targetEntity=Workflow::class, mappedBy="project")
+     * @ApiSubresource(maxDepth=1)
      */
     private iterable $workflows;
 

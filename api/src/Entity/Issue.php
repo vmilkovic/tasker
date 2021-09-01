@@ -6,11 +6,14 @@ use Symfony\Component\Uid\Uuid;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\IssueRepository;
 use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @ORM\Entity(repositoryClass=IssueRepository::class)
+ * @ORM\Table(name="issue")
  */
 #[ApiResource]
 class Issue
@@ -19,11 +22,13 @@ class Issue
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @ApiProperty(identifier=false)
      */
     private $id;
 
     /**
      * @ORM\Column(type="uuid")
+     * @ApiProperty(identifier=true)
      */
     private $uuid;
 
@@ -82,12 +87,14 @@ class Issue
     /**
      * @var Comment[]|ArrayCollection
      * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="issue")
+     * @ApiSubresource(maxDepth=1)
      */
     private iterable $comments;
 
     /**
      * @var Attachment[]|ArrayCollection
      * @ORM\OneToMany(targetEntity=Attachment::class, mappedBy="issue")
+     * @ApiSubresource(maxDepth=1)
      */
     private iterable $attachments;
 
