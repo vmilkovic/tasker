@@ -36,7 +36,7 @@ class Comment
      * @var User
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="comments")
      */
-    private $commenter;
+    private $commenter; # TODO create assert for all entity types
 
     /**
      * @var Task

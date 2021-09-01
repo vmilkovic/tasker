@@ -8,12 +8,15 @@ use Symfony\Component\Uid\Uuid;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
+ * Tasker users
+ *
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\Table(name="user")
  */
@@ -24,108 +27,184 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Assert\Type("integer")
      */
     private $id;
 
     /**
      * @ORM\Column(type="uuid")
+     * @Assert\Uuid
      */
     private $uuid;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
+     * @Assert\NotBlank(
+     *     message="Email is required"
+     * )
+     * @Assert\Email(
+     *     message = "The email '{{ value }}' is not a valid email."
+     * )
      */
-    #[Assert\NotBlank()]
-    private $email;
+    private string $email;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true, nullable=true)
+     * @Assert\Type(
+     *     type="string",
+     *     message="The value {{ value }} is not a valid {{ type }}."
+     * )
      */
-    private $username;
+    private string $username = '';
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\Type(
+     *     type="string",
+     *     message="The value {{ value }} is not a valid {{ type }}."
+     * )
      */
-    private $firstName;
+    private string $firstName = '';
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\Type(
+     *     type="string",
+     *     message="The value {{ value }} is not a valid {{ type }}."
+     * )
      */
-    private $lastName;
+    private string $lastName = '';
 
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
+     * * @Assert\Type(
+     *     type="string",
+     *     message="The value {{ value }} is not a valid {{ type }}."
+     * )
+     * @Assert\NotBlank(
+     *     message="Password is required"
+     * )
      */
-    #[Assert\NotBlank()]
-    private $password;
+    private string $password;
 
     /**
      * @ORM\Column(type="json")
+     * @Assert\Type(
+     *     type="array",
+     *     message="The value {{ value }} is not a valid {{ type }}."
+     * )
      */
-    private $roles = [];
+    private array $roles = [];
 
     /**
      * @var Workspace[]|ArrayCollection
      * @ORM\OneToMany(targetEntity="Workspace", mappedBy="owner",  cascade={"persist"})
+     * @Assert\Type(
+     *     type="iterable",
+     *     message="The value {{ value }} is not a valid {{ type }}."
+     * )
      */
     private iterable $workspaces;
 
     /**
      * @var Project[]|ArrayCollection
      * @ORM\ManyToMany(targetEntity=Project::class, mappedBy="users")
+     * @Assert\Type(
+     *     type="iterable",
+     *     message="The value {{ value }} is not a valid {{ type }}."
+     * )
      */
     private iterable $projects;
 
     /**
      * @var Task[]|ArrayCollection
      * @ORM\OneToMany(targetEntity=Task::class, mappedBy="createdBy")
+     * @Assert\Type(
+     *     type="iterable",
+     *     message="The value {{ value }} is not a valid {{ type }}."
+     * )
      */
     private iterable $createdTasks;
 
     /**
      * @var Task[]|ArrayCollection
      * @ORM\OneToMany(targetEntity=Task::class, mappedBy="assignedTo")
+     * @Assert\Type(
+     *     type="iterable",
+     *     message="The value {{ value }} is not a valid {{ type }}."
+     * )
      */
     private iterable $assignedTasks;
 
     /**
      * @var Issue[]|ArrayCollection
      * @ORM\OneToMany(targetEntity=Issue::class, mappedBy="createdBy")
+     * @Assert\Type(
+     *     type="iterable",
+     *     message="The value {{ value }} is not a valid {{ type }}."
+     * )
      */
     private iterable $createdIssues;
 
     /**
      * @var Issue[]|ArrayCollection
      * @ORM\OneToMany(targetEntity=Issue::class, mappedBy="assignedTo")
+     * @Assert\Type(
+     *     type="iterable",
+     *     message="The value {{ value }} is not a valid {{ type }}."
+     * )
      */
     private iterable $assignedIssues;
 
     /**
      * @var Comment[]|ArrayCollection
      * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="commenter")
+     * @Assert\Type(
+     *     type="iterable",
+     *     message="The value {{ value }} is not a valid {{ type }}."
+     * )
+     * @Assert\Collection(
+     *     fields={
+     *          "text" = {
+     *              @Assert\Type("string"),
+     *              @Assert\NotBlank(
+     *                  message="Comment text is required"
+     *              )
+     *          }
+     *     },
+     *     allowMissingFields = true
+     * )
      */
     private iterable $comments;
 
     /**
+     * @var DateTimeImmutable A "Y-m-d H:i:s" formatted value
      * @ORM\Column(type="datetime_immutable")
+     * @Assert\Type("DateTimeInterface")
      */
     private $lastLogin;
 
     /**
+     * @var DateTimeImmutable A "Y-m-d H:i:s" formatted value
      * @ORM\Column(type="datetime_immutable")
+     * @Assert\Type("DateTimeInterface")
      */
     private $createdAt;
 
     /**
+     * @var DateTimeImmutable|null A "Y-m-d H:i:s" formatted value
      * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @Assert\Type("DateTimeInterface")
      */
-    private $updatedAt;
+    private $updatedAt = null;
 
     /**
+     * @var DateTimeImmutable|null A "Y-m-d H:i:s" formatted value
      * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @Assert\Type("DateTimeInterface")
      */
-    private $deletedAt;
+    private $deletedAt = null;
 
     public function __construct()
     {

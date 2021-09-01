@@ -51,6 +51,11 @@ class Task
     private $estimateTo;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    private $completed;
+
+    /**
      * @ORM\Column(type="smallint")
      */
     private $position;
@@ -92,9 +97,10 @@ class Task
     private iterable $comments;
 
     /**
+     * @var Attachment[]|ArrayCollection
      * @ORM\OneToMany(targetEntity=Attachment::class, mappedBy="task")
      */
-    private $attachments;
+    private iterable $attachments;
 
     /**
      * @ORM\Column(type="datetime_immutable")
@@ -173,6 +179,19 @@ class Task
     public function setEstimateTo(?\DateTimeImmutable $estimateTo): self
     {
         $this->estimateTo = $estimateTo;
+
+        return $this;
+    }
+
+
+    public function getCompleted(): ?bool
+    {
+        return $this->completed;
+    }
+
+    public function setCompleted(bool $completed): self
+    {
+        $this->completed = $completed;
 
         return $this;
     }
