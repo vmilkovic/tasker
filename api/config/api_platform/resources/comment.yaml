@@ -1,0 +1,22 @@
+resources:
+    App\Entity\Comment:
+        iri: 'http://schema.org/Comment'
+        attributes:
+            normalization_context:
+                groups: ['comment_get']
+            denormalization_context:
+                groups: ['comment_post', 'comment_patch']
+        itemOperations:
+            GET_COMMENT:
+                method: 'GET'
+                normalization_context: ['comment_get']
+            UPDATE_COMMENT:
+                method: 'PATCH'
+                normalization_context: ['comment_patch']
+        collectionOperations:
+            GET_COMMENTS:
+                method: 'GET'
+                normalization_context: ['comment_get']
+            CREATE_COMMENT:
+                method: 'POST'
+                normalization_context: ['comment_post']

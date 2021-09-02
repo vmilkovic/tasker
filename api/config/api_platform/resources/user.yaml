@@ -1,0 +1,35 @@
+resources:
+    App\Entity\User:
+        iri: 'http://schema.org/Person'
+        attributes:
+            normalization_context:
+                groups: ['user_get']
+            denormalization_context:
+                groups: ['user_post']
+        itemOperations:
+            GET_USER:
+                method: 'GET'
+                normalization_context: ['user_get']
+            UPDATE_USER:
+                method: 'PATCH'
+                normalization_context: ['user_get']
+        collectionOperations:
+            GET_USERS:
+                method: 'GET'
+                normalization_context: ['user_get']
+            CREATE_USER:
+                method: 'POST'
+                normalization_context: ['user_get']
+        subresourceOperations:
+            created_tasks_get_subresource:
+                method: 'GET'
+                path: '/tasker-api/users/{uuid}/created-tasks'
+            assigned_tasks_get_subresource:
+                method: 'GET'
+                path: '/tasker-api/users/{uuid}/assigned-tasks'
+            created_issues_get_subresource:
+                method: 'GET'
+                path: '/tasker-api/users/{uuid}/created-issues'
+            assigned_issues_get_subresource:
+                method: 'GET'
+                path: '/tasker-api/users/{uuid}/assigned-issues'

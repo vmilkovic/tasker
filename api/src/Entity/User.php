@@ -233,7 +233,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var DateTimeImmutable|null A "Y-m-d H:i:s" formatted value
      * @ORM\Column(type="datetime_immutable", nullable=true)
      * @Assert\Type(type={"DateTimeInterface, null"})
-     * @Groups({"user_get", "user_post", "user_patch"})
+     * @Groups({"user_get", "user_patch"})
      */
     private $updatedAt = null;
 
