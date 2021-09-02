@@ -10,9 +10,9 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping\UniqueConstraint;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiProperty;
-use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -22,36 +22,12 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
  *
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\Table(
- *     name="user",
+ *     name="`user`",
  *     uniqueConstraints={
  *         @UniqueConstraint(
  *             name="user_unique",
  *             columns={"email", "username"}
  *         )
- *     },
- * )
- * @ApiResource(
- *     normalizationContext={"groups"={"read"}},
- *     denormalizationContext={"groups"={"write"}},
- *     collectionOperations={"GET", "POST"},
- *     itemOperations={"GET", "PATCH"},
- *     subresourceOperations={
- *          "created_tasks_get_subresource"={
- *              "method"="GET",
- *              "path"="/tasker-api/users/{uuid}/created-tasks"
- *          },
- *          "assigned_tasks_get_subresource"={
- *              "method"="GET",
- *              "path"="/tasker-api/users/{uuid}/assigned-tasks"
- *          },
- *          "created_issues_get_subresource"={
- *              "method"="GET",
- *              "path"="/tasker-api/users/{uuid}/created-issues"
- *          },
- *          "assigned_issues_get_subresource"={
- *              "method"="GET",
- *              "path"="/tasker-api/users/{uuid}/assigned-issues"
- *          }
  *     },
  * )
  */
@@ -70,6 +46,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="uuid")
      * @Assert\Uuid
      * @ApiProperty(identifier=true)
+     * @Groups({"user_get"})
      */
     private $uuid;
 
@@ -81,6 +58,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Assert\Email(
      *     message = "The email '{{ value }}' is not a valid email."
      * )
+     * @Groups({"user_get", "user_post", "user_patch"})
      */
     private string $email;
 
@@ -90,24 +68,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     type="string",
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
+     * @Groups({"user_get", "user_post", "user_patch"})
      */
-    private string $username = '';
+    private string $username;
 
     /**
+     * @Groups({"user_get"})
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\Type(
      *     type="string",
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
+     * @Groups({"user_get", "user_post", "user_patch"})
      */
     private string $firstName = '';
 
     /**
+     * @Groups({"user_get"})
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\Type(
      *     type="string",
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
+     * @Groups({"user_get", "user_post", "user_patch"})
      */
     private string $lastName = '';
 
@@ -121,6 +104,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Assert\NotBlank(
      *     message="Password is required"
      * )
+     * @Groups({"user_get", "user_post", "user_patch"})
      */
     private string $password;
 
@@ -130,6 +114,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     type="array",
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
+     * @Groups({"user_get", "user_post", "user_patch"})
      */
     private array $roles = [];
 
@@ -141,6 +126,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
      * @ApiSubresource(maxDepth=1)
+     * @Groups({"user_get", "user_post", "user_patch"})
      */
     private iterable $workspaces;
 
@@ -152,6 +138,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
      * @ApiSubresource(maxDepth=1)
+     * @Groups({"user_get", "user_post", "user_patch"})
      */
     private iterable $projects;
 
@@ -163,6 +150,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
      * @ApiSubresource(maxDepth=1)
+     * @Groups({"user_get", "user_post", "user_patch"})
      */
     private iterable $createdTasks;
 
@@ -174,6 +162,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
      * @ApiSubresource(maxDepth=1)
+     * @Groups({"user_get", "user_post", "user_patch"})
      */
     private iterable $assignedTasks;
 
@@ -185,6 +174,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
      * @ApiSubresource(maxDepth=1)
+     * @Groups({"user_get", "user_post", "user_patch"})
      */
     private iterable $createdIssues;
 
@@ -196,6 +186,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
      * @ApiSubresource(maxDepth=1)
+     * @Groups({"user_get", "user_post", "user_patch"})
      */
     private iterable $assignedIssues;
 
@@ -218,34 +209,39 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     allowMissingFields = true
      * )
      * @ApiSubresource(maxDepth=1)
+     * @Groups({"user_get", "user_post", "user_patch"})
      */
     private iterable $comments;
 
     /**
-     * @var DateTimeImmutable A "Y-m-d H:i:s" formatted value
+     * @var DateTimeImmutable|null A "Y-m-d H:i:s" formatted value
      * @ORM\Column(type="datetime_immutable")
      * @Assert\Type("DateTimeInterface")
+     * @Groups({"user_get", "user_post", "user_patch"})
      */
     private $lastLogin;
 
     /**
-     * @var DateTimeImmutable A "Y-m-d H:i:s" formatted value
+     * @var DateTimeImmutable|null A "Y-m-d H:i:s" formatted value
      * @ORM\Column(type="datetime_immutable")
      * @Assert\Type("DateTimeInterface")
+     * @Groups({"user_get", "user_post"})
      */
     private $createdAt;
 
     /**
      * @var DateTimeImmutable|null A "Y-m-d H:i:s" formatted value
      * @ORM\Column(type="datetime_immutable", nullable=true)
-     * @Assert\Type("DateTimeInterface")
+     * @Assert\Type(type={"DateTimeInterface, null"})
+     * @Groups({"user_get", "user_post", "user_patch"})
      */
     private $updatedAt = null;
 
     /**
      * @var DateTimeImmutable|null A "Y-m-d H:i:s" formatted value
      * @ORM\Column(type="datetime_immutable", nullable=true)
-     * @Assert\Type("DateTimeInterface")
+     * @Assert\Type(type={"DateTimeInterface, null"})
+     * @Groups({"user_get"})
      */
     private $deletedAt = null;
 
@@ -301,6 +297,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUsername(string $username): self
     {
         $this->username = $username;
+
+        if (empty($username)) {
+            $this->username = $this->email;
+        }
 
         return $this;
     }

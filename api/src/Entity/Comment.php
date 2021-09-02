@@ -7,15 +7,15 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CommentRepository;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiProperty;
-use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=CommentRepository::class)
  * @ORM\Table(name="comment")
  */
-#[ApiResource]
 class Comment
 {
     /**
@@ -29,35 +29,41 @@ class Comment
     /**
      * @ORM\Column(type="uuid")
      * @ApiProperty(identifier=true)
+     * @Groups({"comment_get"})
      */
     private $uuid;
 
     /**
      * @ORM\Column(type="text", nullable=true)
+     * @Groups({"comment_get", "comment_post", "comment_patch"})
      */
     private $text;
 
     /**
      * @var User
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="comments")
+     * @Groups({"comment_get", "comment_post", "comment_patch"})
      */
     private $commenter; # TODO create assert for all entity types
 
     /**
      * @var Task
      * @ORM\ManyToOne(targetEntity=Task::class, inversedBy="comments")
+     * @Groups({"comment_get", "comment_post", "comment_patch"})
      */
     private $task;
 
     /**
      * @var Issue
      * @ORM\ManyToOne(targetEntity=Issue::class, inversedBy="comments")
+     * @Groups({"comment_get", "comment_post", "comment_patch"})
      */
     private $issue;
 
     /**
      * @var Timer
      * @ORM\OneToOne(targetEntity=Timer::class, mappedBy="comment", cascade={"persist", "remove"})
+     * @Groups({"comment_get", "comment_post", "comment_patch"})
      */
     private $timer;
 
@@ -65,21 +71,31 @@ class Comment
      * @var Attachment[]|ArrayCollection
      * @ORM\OneToMany(targetEntity=Attachment::class, mappedBy="comment")
      * @ApiSubresource(maxDepth=1)
+     * @Groups({"comment_get", "comment_post", "comment_patch"})
      */
     private iterable $attachments;
 
     /**
+     * @var DateTimeImmutable|null A "Y-m-d H:i:s" formatted value
      * @ORM\Column(type="datetime_immutable")
+     * @Assert\Type("DateTimeInterface")
+     * @Groups({"comment_get"})
      */
     private $createdAt;
 
     /**
+     * @var DateTimeImmutable|null A "Y-m-d H:i:s" formatted value
      * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @Assert\Type(type={"DateTimeInterface, null"})
+     * @Groups({"comment_get", "comment_post"})
      */
     private $updatedAt;
 
     /**
+     * @var DateTimeImmutable|null A "Y-m-d H:i:s" formatted value
      * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @Assert\Type(type={"DateTimeInterface, null"})
+     * @Groups({"comment_get"})
      */
     private $deletedAt;
 

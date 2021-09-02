@@ -26,8 +26,9 @@ final class UserDataPersister implements DataPersisterInterface
 
     public function persist($data, array $context = [])
     {
+        #TODO user exist check
 
-        if ($data instanceof User && ($context['collection_operation_name'] ?? null) === 'post') {
+        if ($data instanceof User && ($context['collection_operation_name'] ?? null) === 'CREATE_USER') {
             $data->setPassword($this->passwordHasher->hashPassword($data, $data->getPassword()));
         }
 

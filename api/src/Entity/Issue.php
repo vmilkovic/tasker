@@ -61,6 +61,7 @@ class Issue
      * @var Timer
      * @ORM\OneToOne(targetEntity=Timer::class, inversedBy="issue", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
+     * @ApiSubresource(maxDepth=1)
      */
     private $timer;
 
@@ -81,6 +82,7 @@ class Issue
      * @var Task
      * @ORM\ManyToOne(targetEntity=Task::class, inversedBy="issues")
      * @ORM\JoinColumn(nullable=false)
+     * @ApiSubresource(maxDepth=1)
      */
     private $task;
 

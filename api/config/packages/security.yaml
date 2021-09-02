@@ -35,8 +35,8 @@ security:
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
             guard:
-              authenticators:
-                  - app.jwt_token_authenticator
+                authenticators:
+                    - app.jwt_token_authenticator
 
     access_control:
         - { path: ^/tasker-api/docs, roles: [IS_AUTHENTICATED_ANONYMOUSLY ,PUBLIC_ACCESS], methods: [GET] } # Allows accessing the Swagger UI
