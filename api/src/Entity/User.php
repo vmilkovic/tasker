@@ -46,7 +46,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="uuid")
      * @Assert\Uuid
      * @ApiProperty(identifier=true)
-     * @Groups({"user_get"})
+     * @Groups({"user_read"})
      */
     private $uuid;
 
@@ -58,7 +58,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Assert\Email(
      *     message = "The email '{{ value }}' is not a valid email."
      * )
-     * @Groups({"user_get", "user_post", "user_patch"})
+     * @Groups({"user_read", "user_write"})
      */
     private string $email;
 
@@ -68,29 +68,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     type="string",
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
-     * @Groups({"user_get", "user_post", "user_patch"})
+     * @Groups({"user_read", "user_write"})
      */
     private string $username;
 
     /**
-     * @Groups({"user_get"})
+     * @Groups({"user_read"})
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\Type(
      *     type="string",
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
-     * @Groups({"user_get", "user_post", "user_patch"})
+     * @Groups({"user_read", "user_write"})
      */
     private string $firstName = '';
 
     /**
-     * @Groups({"user_get"})
+     * @Groups({"user_read"})
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\Type(
      *     type="string",
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
-     * @Groups({"user_get", "user_post", "user_patch"})
+     * @Groups({"user_read", "user_write"})
      */
     private string $lastName = '';
 
@@ -104,7 +104,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Assert\NotBlank(
      *     message="Password is required"
      * )
-     * @Groups({"user_get", "user_post", "user_patch"})
+     * @Groups({"user_write"})
      */
     private string $password;
 
@@ -114,7 +114,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     type="array",
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
-     * @Groups({"user_get", "user_post", "user_patch"})
+     * @Groups({"user_read", "user_write"})
      */
     private array $roles = [];
 
@@ -126,7 +126,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
      * @ApiSubresource(maxDepth=1)
-     * @Groups({"user_get", "user_post", "user_patch"})
+     * @Groups({"user_read", "user_write"})
      */
     private iterable $workspaces;
 
@@ -138,7 +138,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
      * @ApiSubresource(maxDepth=1)
-     * @Groups({"user_get", "user_post", "user_patch"})
+     * @Groups({"user_read", "user_write"})
      */
     private iterable $projects;
 
@@ -150,7 +150,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
      * @ApiSubresource(maxDepth=1)
-     * @Groups({"user_get", "user_post", "user_patch"})
+     * @Groups({"user_read", "user_write"})
      */
     private iterable $createdTasks;
 
@@ -162,7 +162,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
      * @ApiSubresource(maxDepth=1)
-     * @Groups({"user_get", "user_post", "user_patch"})
+     * @Groups({"user_read", "user_write"})
      */
     private iterable $assignedTasks;
 
@@ -174,7 +174,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
      * @ApiSubresource(maxDepth=1)
-     * @Groups({"user_get", "user_post", "user_patch"})
+     * @Groups({"user_read", "user_write"})
      */
     private iterable $createdIssues;
 
@@ -186,7 +186,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     message="The value {{ value }} is not a valid {{ type }}."
      * )
      * @ApiSubresource(maxDepth=1)
-     * @Groups({"user_get", "user_post", "user_patch"})
+     * @Groups({"user_read", "user_write"})
      */
     private iterable $assignedIssues;
 
@@ -209,7 +209,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *     allowMissingFields = true
      * )
      * @ApiSubresource(maxDepth=1)
-     * @Groups({"user_get", "user_post", "user_patch"})
+     * @Groups({"user_read", "user_write"})
      */
     private iterable $comments;
 
@@ -217,7 +217,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var DateTimeImmutable|null A "Y-m-d H:i:s" formatted value
      * @ORM\Column(type="datetime_immutable")
      * @Assert\Type("DateTimeInterface")
-     * @Groups({"user_get", "user_post", "user_patch"})
+     * @Groups({"user_read", "user_write"})
      */
     private $lastLogin;
 
@@ -225,7 +225,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var DateTimeImmutable|null A "Y-m-d H:i:s" formatted value
      * @ORM\Column(type="datetime_immutable")
      * @Assert\Type("DateTimeInterface")
-     * @Groups({"user_get", "user_post"})
+     * @Groups({"user_read", "user_create"})
      */
     private $createdAt;
 
@@ -233,7 +233,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var DateTimeImmutable|null A "Y-m-d H:i:s" formatted value
      * @ORM\Column(type="datetime_immutable", nullable=true)
      * @Assert\Type(type={"DateTimeInterface, null"})
-     * @Groups({"user_get", "user_patch"})
+     * @Groups({"user_read", "user_update"})
      */
     private $updatedAt = null;
 
@@ -241,7 +241,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var DateTimeImmutable|null A "Y-m-d H:i:s" formatted value
      * @ORM\Column(type="datetime_immutable", nullable=true)
      * @Assert\Type(type={"DateTimeInterface, null"})
-     * @Groups({"user_get"})
+     * @Groups({"user_read"})
      */
     private $deletedAt = null;
 

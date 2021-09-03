@@ -29,41 +29,41 @@ class Comment
     /**
      * @ORM\Column(type="uuid")
      * @ApiProperty(identifier=true)
-     * @Groups({"comment_get"})
+     * @Groups({"comment_read"})
      */
     private $uuid;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @Groups({"comment_get", "comment_post", "comment_patch"})
+     * @Groups({"comment_read", "comment_write"})
      */
     private $text;
 
     /**
      * @var User
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="comments")
-     * @Groups({"comment_get", "comment_post", "comment_patch"})
+     * @Groups({"comment_read", "comment_write"})
      */
     private $commenter; # TODO create assert for all entity types
 
     /**
      * @var Task
      * @ORM\ManyToOne(targetEntity=Task::class, inversedBy="comments")
-     * @Groups({"comment_get", "comment_post", "comment_patch"})
+     * @Groups({"comment_read", "comment_write"})
      */
     private $task;
 
     /**
      * @var Issue
      * @ORM\ManyToOne(targetEntity=Issue::class, inversedBy="comments")
-     * @Groups({"comment_get", "comment_post", "comment_patch"})
+     * @Groups({"comment_read", "comment_write"})
      */
     private $issue;
 
     /**
      * @var Timer
      * @ORM\OneToOne(targetEntity=Timer::class, mappedBy="comment", cascade={"persist", "remove"})
-     * @Groups({"comment_get", "comment_post", "comment_patch"})
+     * @Groups({"comment_read", "comment_write"})
      */
     private $timer;
 
@@ -71,7 +71,7 @@ class Comment
      * @var Attachment[]|ArrayCollection
      * @ORM\OneToMany(targetEntity=Attachment::class, mappedBy="comment")
      * @ApiSubresource(maxDepth=1)
-     * @Groups({"comment_get", "comment_post", "comment_patch"})
+     * @Groups({"comment_read", "comment_write"})
      */
     private iterable $attachments;
 
@@ -79,7 +79,7 @@ class Comment
      * @var DateTimeImmutable|null A "Y-m-d H:i:s" formatted value
      * @ORM\Column(type="datetime_immutable")
      * @Assert\Type("DateTimeInterface")
-     * @Groups({"comment_get"})
+     * @Groups({"comment_read", "comment_create"})
      */
     private $createdAt;
 
@@ -87,7 +87,7 @@ class Comment
      * @var DateTimeImmutable|null A "Y-m-d H:i:s" formatted value
      * @ORM\Column(type="datetime_immutable", nullable=true)
      * @Assert\Type(type={"DateTimeInterface, null"})
-     * @Groups({"comment_get", "comment_post"})
+     * @Groups({"comment_read", "comment_update"})
      */
     private $updatedAt;
 
@@ -95,7 +95,7 @@ class Comment
      * @var DateTimeImmutable|null A "Y-m-d H:i:s" formatted value
      * @ORM\Column(type="datetime_immutable", nullable=true)
      * @Assert\Type(type={"DateTimeInterface, null"})
-     * @Groups({"comment_get"})
+     * @Groups({"comment_read"})
      */
     private $deletedAt;
 

@@ -3,20 +3,24 @@ resources:
         iri: 'http://schema.org/Comment'
         attributes:
             normalization_context:
-                groups: ['comment_get']
+                groups: ['comment_read']
             denormalization_context:
-                groups: ['comment_post', 'comment_patch']
+                groups: ['comment_write']
         itemOperations:
             GET_COMMENT:
                 method: 'GET'
-                normalization_context: ['comment_get']
+                normalization_context: ['comment_read']
             UPDATE_COMMENT:
                 method: 'PATCH'
-                normalization_context: ['comment_patch']
+                normalization_context: ['comment_read']
+                denormalization_context:
+                    groups: ['comment_write', 'comment_update']
         collectionOperations:
             GET_COMMENTS:
                 method: 'GET'
-                normalization_context: ['comment_get']
+                normalization_context: ['comment_read']
             CREATE_COMMENT:
                 method: 'POST'
-                normalization_context: ['comment_post']
+                normalization_context: ['comment_read']
+                denormalization_context:
+                    groups: ['comment_write', 'comment_create']

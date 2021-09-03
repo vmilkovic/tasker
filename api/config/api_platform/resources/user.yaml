@@ -3,23 +3,27 @@ resources:
         iri: 'http://schema.org/Person'
         attributes:
             normalization_context:
-                groups: ['user_get']
+                groups: ['user_read']
             denormalization_context:
-                groups: ['user_post']
+                groups: ['user_write']
         itemOperations:
             GET_USER:
                 method: 'GET'
-                normalization_context: ['user_get']
+                normalization_context: ['user_read']
             UPDATE_USER:
                 method: 'PATCH'
-                normalization_context: ['user_get']
+                normalization_context: ['user_read']
+                denormalization_context:
+                    groups: ['user_write', 'user_update']
         collectionOperations:
             GET_USERS:
                 method: 'GET'
-                normalization_context: ['user_get']
+                normalization_context: ['user_read']
             CREATE_USER:
                 method: 'POST'
-                normalization_context: ['user_get']
+                normalization_context: ['user_read']
+                denormalization_context:
+                    groups: ['user_write', 'user_create']
         subresourceOperations:
             created_tasks_get_subresource:
                 method: 'GET'
