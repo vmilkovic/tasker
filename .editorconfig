@@ -39,7 +39,7 @@ indent_size = 2
 
 # YAML Files
 [*.{yml,yaml}]
-indent_size = 2
+indent_size = 4
 
 # Markdown Files
 [*.md]
