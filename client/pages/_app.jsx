@@ -1,5 +1,4 @@
 import { Provider } from "next-auth/client";
-
 import "../styles/globals.scss";
 
 function Todoer({ Component, pageProps }) {

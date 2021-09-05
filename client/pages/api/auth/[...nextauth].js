@@ -1,13 +1,21 @@
 import NextAuth from "next-auth";
 import Providers from "next-auth/providers";
 
-const options = {
+export default NextAuth({
   providers: [
     Providers.Credentials({
       name: "Credentials",
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "jsmith" },
-        password: { label: "Password", type: "password" },
+        email: {
+          label: "Email",
+          type: "text",
+          placeholder: "example@email.com",
+        },
+        password: {
+          label: "Password",
+          type: "password",
+          placeholder: "password",
+        },
       },
       authorize(credentials, req) {
         const user = { name: "Vedran Milković", email: "vedran@milkovic.dev" };
@@ -33,7 +41,6 @@ const options = {
       return session;
     },
     async jwt(token, user, account, profile, isNewUser) {
-      console.log(isNewUser);
       //TODO create or validate user and create database credentials token (uuid, name, email)
       return token;
     },
@@ -45,6 +52,4 @@ const options = {
     jwt: true,
   },
   debug: false,
-};
-
-export default (req, res) => NextAuth(req, res, options);
+});

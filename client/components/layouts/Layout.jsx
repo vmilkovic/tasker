@@ -1,15 +1,18 @@
 import Head from "next/head";
-import styles from "./layout.module.scss";
+import styles from "../../styles/scss/components/layouts/Layout.module.scss";
+import Header from "./Header";
+import Footer from "./Footer";
+import Sidebar from "./Sidebar";
 
 export default function Layout({ children }) {
   return (
     <>
-      <Head>
-        <title>Layouts Example</title>
-      </Head>
-      <main id={styles.main} className={styles.main}>
+      <Header />
+      <main>
+        <Sidebar />
         {children}
       </main>
+      <Footer />
     </>
   );
 }

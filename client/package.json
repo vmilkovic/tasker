@@ -9,17 +9,25 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@heroicons/react": "^1.0.4",
+    "@tailwindcss/forms": "^0.3.3",
     "axios": "^0.21.2",
     "babel-preset-next": "^1.4.0",
     "next": "^11.1.2",
     "next-auth": "^3.29.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "sass": "^1.39.0"
+    "sass": "^1.39.0",
+    "stylelint-scss": "^3.20.1"
   },
   "devDependencies": {
+    "autoprefixer": "^10.3.4",
     "eslint": "^7.32.0",
     "eslint-config-next": "11.0.1",
-    "eslint-config-prettier": "^8.3.0"
+    "eslint-config-prettier": "^8.3.0",
+    "postcss": "^8.3.6",
+    "stylelint": "^13.13.1",
+    "stylelint-config-standard": "^22.0.0",
+    "tailwindcss": "^2.2.9"
   }
 }
