@@ -12,5 +12,7 @@
       "password": "postgres"
     }
   ],
-  "cSpell.words": ["apcu", "dbal", "openapi", "samesite"]
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false
 }
