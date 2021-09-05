@@ -4,7 +4,7 @@ import Providers from "next-auth/providers";
 export default NextAuth({
   providers: [
     Providers.Credentials({
-      name: "Credentials",
+      name: "Tasker credentials",
       credentials: {
         email: {
           label: "Email",
@@ -44,9 +44,6 @@ export default NextAuth({
       //TODO create or validate user and create database credentials token (uuid, name, email)
       return token;
     },
-  },
-  pages: {
-    signIn: "/auth/signin",
   },
   session: {
     jwt: true,

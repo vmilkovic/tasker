@@ -1,2 +1,5 @@
 @layer components {
+  .profile-icon {
+    @apply hidden xl:inline-flex p-2 h-10 w-10 text-gray-700 cursor-pointer rounded-xl hover:bg-gray-200;
+  }
 }

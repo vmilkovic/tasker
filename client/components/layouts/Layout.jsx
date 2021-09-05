@@ -1,12 +1,14 @@
 import Head from "next/head";
-import styles from "../../styles/scss/components/layouts/Layout.module.scss";
-import Header from "./Header";
-import Footer from "./Footer";
-import Sidebar from "./Sidebar";
+import Header from "../shared/Header";
+import Sidebar from "../shared/Sidebar";
+import Footer from "../shared/Footer";
 
-export default function Layout({ children }) {
+function Dashboard({ title, children }) {
   return (
     <>
+      <Head>
+        <title>{title}</title>
+      </Head>
       <Header />
       <main>
         <Sidebar />
@@ -16,3 +18,5 @@ export default function Layout({ children }) {
     </>
   );
 }
+
+export default Dashboard;

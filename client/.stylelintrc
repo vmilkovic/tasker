@@ -6,6 +6,17 @@
   "rules": {
     "declaration-block-trailing-semicolon": null,
     "no-descending-specificity": null,
+    "at-rule-empty-line-before": [
+      "always",
+      {
+        "except": [
+          "after-same-name"
+        ],
+        "ignore": [
+          "first-nested"
+        ]
+      }
+    ],
     "scss/at-rule-no-unknown": [
       true,
       {

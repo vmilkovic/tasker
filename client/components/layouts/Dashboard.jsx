@@ -1,6 +1,4 @@
-import styles from "../../styles/scss/components/layouts/Dashboard.module.scss";
-
-function Dashboard() {
-  <></>;
+function Dashboard({ children }) {
+  return <>{children}</>;
 }
 export default Dashboard;

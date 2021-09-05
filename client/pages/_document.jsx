@@ -1,5 +1,4 @@
 import Document, { Html, Head, Main, NextScript } from "next/document";
-import Layout from "../components/layouts/Layout";
 
 class MyDocument extends Document {
   static async getInitialProps(ctx) {
@@ -11,7 +10,7 @@ class MyDocument extends Document {
     return (
       <Html>
         <Head />
-        <body className="test">
+        <body>
           <Main />
           <NextScript />
         </body>
