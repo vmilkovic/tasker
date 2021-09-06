@@ -10,7 +10,7 @@ function Dashboard({ title, children }) {
         <title>{title}</title>
       </Head>
       <Header />
-      <main>
+      <main className="flex">
         <Sidebar />
         {children}
       </main>
