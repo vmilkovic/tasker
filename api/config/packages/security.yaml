@@ -20,23 +20,20 @@ security:
         tasker_api_token_refresh:
             pattern: ^/tasker-api/token/refresh
             stateless: true
-            user_checker: security.user.provider.concrete.app_user_provider
+            refresh_jwt: ~
 
         tasker_api:
             pattern: ^/tasker-api
             stateless: true
             provider: app_user_provider
-            jwt: ~
-            entry_point: app.jwt_token_authenticator
+            jwt:
+                authenticator: App\Security\JWTTokenAuthenticator
             json_login:
                 check_path: /tasker-api/authentication
                 username_path: email
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
-            guard:
-                authenticators:
-                    - app.jwt_token_authenticator
 
     access_control:
         - { path: ^/tasker-api/docs, roles: [IS_AUTHENTICATED_ANONYMOUSLY ,PUBLIC_ACCESS], methods: [GET] } # Allows accessing the Swagger UI

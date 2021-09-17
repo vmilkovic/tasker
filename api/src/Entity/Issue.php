@@ -43,11 +43,6 @@ class Issue
     private $description;
 
     /**
-     * @ORM\Column(type="boolean")
-     */
-    private $isResolved;
-
-    /**
      * @ORM\Column(type="datetime_immutable", nullable=true)
      */
     private $estimateFrom;
@@ -56,6 +51,11 @@ class Issue
      * @ORM\Column(type="datetime_immutable", nullable=true)
      */
     private $estimateTo;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isResolved;
 
     /**
      * @var Timer
@@ -156,18 +156,6 @@ class Issue
         return $this;
     }
 
-    public function getIsResolved(): ?bool
-    {
-        return $this->isResolved;
-    }
-
-    public function setIsResolved(bool $isResolved): self
-    {
-        $this->isResolved = $isResolved;
-
-        return $this;
-    }
-
     public function getEstimateFrom(): ?\DateTimeImmutable
     {
         return $this->estimateFrom;
@@ -188,6 +176,18 @@ class Issue
     public function setEstimateTo(?\DateTimeImmutable $estimateTo): self
     {
         $this->estimateTo = $estimateTo;
+
+        return $this;
+    }
+
+    public function getIsResolved(): ?bool
+    {
+        return $this->isResolved;
+    }
+
+    public function setIsResolved(bool $isResolved): self
+    {
+        $this->isResolved = $isResolved;
 
         return $this;
     }

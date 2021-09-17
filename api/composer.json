@@ -13,7 +13,7 @@
     "doctrine/doctrine-bundle": "^2.4",
     "doctrine/doctrine-migrations-bundle": "^3.1",
     "doctrine/orm": "^2.9",
-    "gesdinet/jwt-refresh-token-bundle": "^0.12.0",
+    "gesdinet/jwt-refresh-token-bundle": "dev-master",
     "lexik/jwt-authentication-bundle": "^2.12",
     "nelmio/cors-bundle": "^2.1",
     "phpdocumentor/reflection-docblock": "^5.2",
@@ -80,6 +80,7 @@
   },
   "require-dev": {
     "doctrine/doctrine-fixtures-bundle": "^3.4",
+    "fakerphp/faker": "^1.16",
     "hautelook/alice-bundle": "^2.9",
     "justinrainbow/json-schema": "^5.2",
     "phpunit/phpunit": "^9.5",

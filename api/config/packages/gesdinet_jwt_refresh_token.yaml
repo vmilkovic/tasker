@@ -1,6 +1,11 @@
 gesdinet_jwt_refresh_token:
     ttl: 2592000
-    token_parameter_name: refreshToken
+    token_parameter_name: refresh-token
     single_use: true
-    user_identity_field: email
-    user_provider: security.user.provider.concrete.app_user_provider
+    cookie:
+        enabled: true
+        sameSite: lax
+        path: /
+        domain: null
+        httpOnly: true
+        secure: true

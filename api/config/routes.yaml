@@ -4,5 +4,4 @@ authentication:
 
 gesdinet_jwt_refresh_token:
     path: /tasker-api/token/refresh
-    controller: gesdinet.jwtrefreshtoken::refresh
     methods: ['POST']

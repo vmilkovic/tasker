@@ -20,16 +20,6 @@ final class JWTSetDecorator implements OpenApiFactoryInterface
         $openApi = ($this->decorated)($context);
         $schemas = $openApi->getComponents()->getSchemas();
 
-        $schemas['Token'] = new \ArrayObject([
-            'type' => 'object',
-            'properties' => [
-                'refresherToken' => [
-                    'type' => 'string',
-                    'readOnly' => true,
-                ],
-            ],
-        ]);
-
         $schemas['Token Credentials'] = new \ArrayObject([
             'type' => 'object',
             'properties' => [
@@ -51,14 +41,7 @@ final class JWTSetDecorator implements OpenApiFactoryInterface
                 tags: ['Set Authentication Token'],
                 responses: [
                     '200' => [
-                        'description' => 'Set JWT token in httpOnly cookie and get refresher token',
-                        'content' => [
-                            'application/json' => [
-                                'schema' => [
-                                    '$ref' => '#/components/schemas/Token',
-                                ],
-                            ],
-                        ],
+                        'description' => 'Set JWT and refresher token in httpOnly cookie',
                     ],
                 ],
                 summary: 'Set JWT token to login.',

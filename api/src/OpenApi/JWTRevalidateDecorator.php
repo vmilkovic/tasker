@@ -20,20 +20,10 @@ final class JWTRevalidateDecorator implements OpenApiFactoryInterface
         $openApi = ($this->decorated)($context);
         $schemas = $openApi->getComponents()->getSchemas();
 
-        $schemas['Refresher'] = new \ArrayObject([
-            'type' => 'object',
-            'properties' => [
-                'refreshToken' => [
-                    'type' => 'string',
-                    'readOnly' => true,
-                ],
-            ],
-        ]);
-
         $schemas['Refresher Credentials'] = new \ArrayObject([
             'type' => 'object',
             'properties' => [
-                'refreshToken' => [
+                'refresh-token' => [
                     'type' => 'string',
                     'example' => 'f6a611282c5fc980ddfc970fcf3029b6e773068df51797c3ef272b47d1593bdd40077aadab35052021a78f5810e3ba0a9b089da37f3c2b36074e4b7e23585b8b',
                 ]
@@ -47,7 +37,7 @@ final class JWTRevalidateDecorator implements OpenApiFactoryInterface
                 tags: ['Reset Authentication Token'],
                 responses: [
                     '200' => [
-                        'description' => 'Reset JWT token in httpOnly cookie and get new refresher token',
+                        'description' => 'Reset JWT token and refresher token in httpOnly cookie',
                         'content' => [
                             'application/json' => [
                                 'schema' => [
@@ -57,7 +47,7 @@ final class JWTRevalidateDecorator implements OpenApiFactoryInterface
                         ],
                     ],
                 ],
-                summary: 'Set new JWT token with refresher token.',
+                summary: 'Set new JWT and refresher refresher token.',
                 requestBody: new Model\RequestBody(
                     description: 'Generate new JWT Token with refresher token',
                     content: new \ArrayObject([

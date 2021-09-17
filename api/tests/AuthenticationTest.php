@@ -16,16 +16,17 @@ class AuthenticationTest extends ApiTestCase
 
         $user = new User();
         $user->setEmail('vedran@milkovic.dev');
+        $user->setUsername('vmilkovic');
         $user->setPassword(
-            static::getContainer()->get('security.password_encoder')->encodePassword($user, 'password')
+            static::getContainer()->get('security.user_password_hasher')->hashPassword($user, 'password')
         );
 
         $manager = static::getContainer()->get('doctrine')->getManager();
         $manager->persist($user);
         $manager->flush();
 
-        // retrieve a token
-        $response = $client->request('POST', '/tasker-api/authentication', [
+        // set tokens
+        $client->request('POST', '/tasker-api/authentication', [
             'headers' => ['Content-Type' => 'application/json'],
             'json' => [
                 'email' => 'vedran@milkovic.dev',
@@ -33,16 +34,11 @@ class AuthenticationTest extends ApiTestCase
             ],
         ]);
 
-        $json = $response->toArray();
-        $this->assertResponseIsSuccessful();
-        $this->assertArrayHasKey('token', $json);;
-
-        // test not authorized
-        $client->request('GET', '/tasker-api');
-        $this->assertResponseStatusCodeSame(401);
+        // test if tokens are set
+        $this->assertResponseStatusCodeSame(204);
 
         // test authorized
-        $client->request('GET', '/tasker-api', ['auth_bearer' => $json['token']]);
+        $client->request('GET', '/tasker-api');
         $this->assertResponseIsSuccessful();
     }
 }

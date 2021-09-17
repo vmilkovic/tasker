@@ -1,2 +1,2 @@
 hautelook_alice:
-    fixtures_path: src/DataFixtures
+    fixtures_path: fixtures
